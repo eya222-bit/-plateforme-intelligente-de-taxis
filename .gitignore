@@ -1,0 +1,12 @@
+# Environnement virtuel Python
+venv/
+.venv/
+__pycache__/
+*.pyc
+
+# Variables d'environnement (contient tes mots de passe de base de données)
+.env
+
+# Fichiers système
+.DS_Store
+Thumbs.db

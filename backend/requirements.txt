@@ -1,0 +1,10 @@
+fastapi==0.110.0
+uvicorn==0.28.0
+sqlalchemy==2.0.28
+pymysql==1.1.0        # Driver pour connecter Python à MySQL
+cryptography==42.0.5  # Requis pour sécuriser les connexions MySQL
+python-dotenv==1.0.1  # Pour lire les variables de configuration (.env)
+passlib[bcrypt]==1.7.4 # Pour le hachage sécurisé des mots de passe
+pyjwt==2.8.0          # Pour l'authentification sécurisée par Tokens JWT
+websockets==12.0      # Pour la géolocalisation temps réel
+email-validator==2.1.1
