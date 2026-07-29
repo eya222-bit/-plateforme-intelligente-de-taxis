@@ -5,9 +5,22 @@ from .. import models, schemas
 from ..dependencies import get_current_chauffeur
 
 router = APIRouter(
-    prefix="/vehicule",
+    prefix="/vehicules",
     tags=["Véhicules"]
 )
+
+@router.get("/mon-vehicule", response_model=schemas.VehiculeResponse)
+def obtenir_mon_vehicule(
+    db: Session = Depends(get_db),
+    current_chauffeur: models.Chauffeur = Depends(get_current_chauffeur)
+):
+    vehicule = db.query(models.Vehicule).filter(models.Vehicule.chauffeur_id == current_chauffeur.id).first()
+    if not vehicule:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Aucun véhicule enregistré pour ce chauffeur."
+        )
+    return vehicule
 
 @router.post("/", response_model=schemas.VehiculeResponse, status_code=status.HTTP_201_CREATED)
 def ajouter_vehicule(

@@ -11,10 +11,7 @@ from ..dependencies import get_current_chauffeur
 
 load_dotenv()
 
-router = APIRouter(
-    prefix="/auth",
-    tags=["Authentification"]
-)
+router = APIRouter()
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
@@ -31,9 +28,30 @@ def create_access_token(data: dict):
     encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
     return encoded_jwt
 
-# --- Ta route Register existante est ici ---
+# --- Route d'inscription ---
+@router.post("/register", response_model=schemas.ChauffeurResponse, status_code=status.HTTP_201_CREATED)
+def register(chauffeur_data: schemas.ChauffeurCreate, db: Session = Depends(get_db)):
+    existing = db.query(models.Chauffeur).filter(models.Chauffeur.email == chauffeur_data.email).first()
+    if existing:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Un compte avec cet e-mail existe déjà."
+        )
+    hashed_password = pwd_context.hash(chauffeur_data.mot_de_passe)
+    new_chauffeur = models.Chauffeur(
+        nom=chauffeur_data.nom,
+        prenom=chauffeur_data.prenom,
+        email=chauffeur_data.email,
+        mot_de_passe_hache=hashed_password,
+        est_actif=False,
+        solde_revenus=0.0,
+    )
+    db.add(new_chauffeur)
+    db.commit()
+    db.refresh(new_chauffeur)
+    return new_chauffeur
 
-# --- NOUVELLE ROUTE : LOGIN ---
+# --- Route LOGIN ---
 @router.post("/login", response_model=schemas.TokenResponse)
 def login(credentials: schemas.LoginRequest, db: Session = Depends(get_db)):
     # 1. Rechercher le chauffeur par email

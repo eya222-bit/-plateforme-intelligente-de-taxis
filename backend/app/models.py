@@ -17,10 +17,9 @@ class Chauffeur(Base):
     rayon_abonnement = Column(Float, default=5.0)  # Rayon d'action en kilomètres
     
     # --- Données de géolocalisation temps réel ---
-    latitude = Column(Float, nullable=True)
-    longitude = Column(Float, nullable=True)
+    latitude_actuelle = Column(Float, nullable=True)
+    longitude_actuelle = Column(Float, nullable=True)
     derniere_mise_a_jour_gps = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
-    rayon_abonnement_km = Column(Float, default=5.0)
     
     # --- Statistiques & Revenus ---
     solde_revenus = Column(Float, default=0.0)
@@ -58,6 +57,35 @@ class Client(Base):
     destination_lat = Column(Float, nullable=True)
     destination_lng = Column(Float, nullable=True)
     en_attente = Column(Boolean, default=True)
+class Course(Base):
+     __tablename__ = "courses"
+
+     id = Column(Integer, primary_key=True, index=True)
+     client_nom = Column(String(100), nullable=False)
+     depart_lat = Column(Float, nullable=False)
+     depart_lng = Column(Float, nullable=False)
+     destination_nom = Column(String(255), nullable=False)
+     dest_lat = Column(Float, nullable=False)
+     dest_lng = Column(Float, nullable=False)
+     distance_km = Column(Float, nullable=True)
+     statut = Column(String(50), default="EN_ATTENTE") # EN_ATTENTE, ACCEPTEE, TERMINEE
+     created_at = Column(DateTime, default=datetime.utcnow)
+
+    # Relation avec les offres de prix des chauffeurs
+     offres = relationship("OffrePrix", back_populates="course", cascade="all, delete-orphan")
+
+
+class OffrePrix(Base):
+    __tablename__ = "offres_prix"
+
+    id = Column(Integer, primary_key=True, index=True)
+    course_id = Column(Integer, ForeignKey("courses.id"), nullable=False)
+    chauffeur_nom = Column(String(100), nullable=False)
+    prix = Column(Float, nullable=False)
+    statut = Column(String(50), default="EN_ATTENTE") # EN_ATTENTE, ACCEPTEE, REFUSEE
+    created_at = Column(DateTime, default=datetime.utcnow)
+
+    course = relationship("Course", back_populates="offres")
 
 # --- NOTIFICATION ---
 class Notification(Base):
