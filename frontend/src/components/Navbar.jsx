@@ -16,8 +16,8 @@ const Navbar = () => {
       <div style={styles.menu}>
         {token ? (
           <>
-            <button onClick={() => navigate('/ChauffeurDashboard')} style={styles.linkBtn}>Dashboard</button>
-            <button onClick={() => navigate('/vehicule')} style={styles.linkBtn}>Mon Véhicule</button>
+            
+            
             <button onClick={() => navigate('/Home')} style={styles.linkBtn}>Page d'accueil</button>
             <button onClick={handleLogout} style={styles.logoutBtn}>Déconnexion</button>
           </>

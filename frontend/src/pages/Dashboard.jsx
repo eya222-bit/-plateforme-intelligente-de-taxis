@@ -112,23 +112,7 @@ const Dashboard = () => {
 
           <hr style={{ margin: '20px 0' }} />
 
-          <section style={{ marginBottom: '20px' }}>
-            <h4>Demandes statiques (ancienne version)</h4>
-            {demandes.map((item) => (
-              <div key={`static-${item.id}`} style={styles.card}>
-                <p><strong>Client :</strong> {item.client}</p>
-                <p><strong>Destination :</strong> {item.destination}</p>
-                <p><strong>Prix :</strong> {item.prix}</p>
-                <button
-                  onClick={() => accepterCourse(item.id)}
-                  style={styles.acceptBtn}
-                  disabled={!estDisponible}
-                >
-                  Accepter la course
-                </button>
-              </div>
-            ))}
-          </section>
+          
 
           <section>
             <h4>Bonjour {chauffeurName || 'Chauffeur'}</h4>

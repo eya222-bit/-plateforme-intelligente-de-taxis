@@ -38,33 +38,27 @@ def calculer_distance_km(lat1, lon1, lat2, lon2):
 
 # 1. Le Client crée une demande de course -> INSERT INTO courses
 @router.post("/demander")
-def demander_course(demande: DemandeCourseCreate, db: Session = Depends(get_db)):
-    dist = calculer_distance_km(demande.lat_depart, demande.lng_depart, demande.lat_dest, demande.lng_dest)
-    
+
+def demander_course(
+    data: DemandeCourseCreate, 
+    db: Session = Depends(get_db),
+    current_user: models.Client = Depends(get_current_chauffeur) # Récupère le client connecté via JWT
+):
     nouvelle_course = models.Course(
-        client_nom=demande.client_nom,
-        depart_lat=demande.lat_depart,
-        depart_lng=demande.lng_depart,
-        destination_nom=demande.destination_nom,
-        dest_lat=demande.lat_dest,
-        dest_lng=demande.lng_dest,
-        distance_km=dist,
+        client_id=current_user.id,  # 👈 S'assurer d'associer l'ID du client connecté
+        client_nom=f"{current_user.nom} {current_user.prenom}",
+        depart_lat=data.depart_lat,
+        depart_lng=data.depart_lng,
+        destination_nom=data.destination_nom,
+        dest_lat=data.dest_lat,
+        dest_lng=data.dest_lng,
+        distance_km=data.distance_km,
         statut="EN_ATTENTE"
     )
-    
     db.add(nouvelle_course)
     db.commit()
     db.refresh(nouvelle_course)
-    
-    return {
-        "id": nouvelle_course.id,
-        "client_nom": nouvelle_course.client_nom,
-        "depart": [nouvelle_course.depart_lat, nouvelle_course.depart_lng],
-        "destination_nom": nouvelle_course.destination_nom,
-        "destination": [nouvelle_course.dest_lat, nouvelle_course.dest_lng],
-        "distance_km": nouvelle_course.distance_km,
-        "statut": nouvelle_course.statut
-    }
+    return nouvelle_course
 
 
 # 2. Le Chauffeur consulte les demandes en attente -> SELECT * FROM courses WHERE statut = 'EN_ATTENTE'
