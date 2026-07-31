@@ -5,7 +5,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from .database import engine
 from . import models
 from .routers import auth
-from app.routers import auth, vehicules, chauffeurs, courses
+from app.routers import auth, vehicules, chauffeurs, courses, clients
 from .routers import courses
 from .database import engine, Base
 
@@ -36,6 +36,7 @@ app.include_router(auth.router)
 app.include_router(vehicules.router)
 app.include_router(chauffeurs.router)
 app.include_router(courses.router)
+app.include_router(clients.router)
 
 @app.get("/")
 def read_root():

@@ -58,17 +58,27 @@ class StatutUpdate(BaseModel):
 class SoldeUpdate(BaseModel):
     montant: float  # Montant à ajouter ou retirer
 # --- Client ---
-class ClientResponse(BaseModel):
+class ClientCreate(BaseModel):
+    nom: str
+    prenom: str
+    email: EmailStr
+    mot_de_passe: str
+
+# Données renvoyées au Frontend
+class ClientOut(BaseModel):
     id: int
     nom: str
-    latitude: float
-    longitude: float
-    destination_lat: Optional[float]
-    destination_lng: Optional[float]
-    distance_km: Optional[float] = None
+    prenom: str
+    email: str
+    date_inscription: Optional[datetime] = None
 
     class Config:
         from_attributes = True
+
+# Données reçues lors du Login
+class LoginRequest(BaseModel):
+    email: EmailStr
+    mot_de_passe: str
 
 # --- Notification ---
 class NotificationResponse(BaseModel):
@@ -80,3 +90,21 @@ class NotificationResponse(BaseModel):
 
     class Config:
         from_attributes = True
+
+
+  # Schéma pour l'inscription Client
+
+
+# Schéma pour la connexion
+
+
+# Schéma de réponse
+ 
+
+    class LoginRequest(BaseModel):
+     email: EmailStr
+     mot_de_passe: str
+
+    class TokenResponse(BaseModel):
+     access_token: str
+     token_type: str

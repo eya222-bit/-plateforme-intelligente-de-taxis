@@ -3,14 +3,35 @@ import math
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from ..database import get_db
-from .. import models, schemas
+from .. import models, schemas, auth
 from ..dependencies import get_current_chauffeur
 import math
 
 router = APIRouter(
-    prefix="/chauffeur",
+    prefix="/chauffeurs",
     tags=["Gestion Chauffeur"]
 )
+@router.post("/register", status_code=status.HTTP_201_CREATED)
+def register_chauffeur(data: schemas.ChauffeurCreate, db: Session = Depends(get_db)):
+    # Vérification spécifique dans la table chauffeurs
+    existing = db.query(models.Chauffeur).filter(models.Chauffeur.email == data.email).first()
+    if existing:
+        raise HTTPException(status_code=400, detail="Cet email est déjà utilisé par un chauffeur.")
+    
+    hashed_pwd = auth.hash_password(data.mot_de_passe)
+    
+    nouveau_chauffeur = models.Chauffeur(
+        nom=data.nom,
+        prenom=data.prenom,
+        email=data.email,
+        mot_de_passe_hache=hashed_pwd
+    )
+    
+    db.add(nouveau_chauffeur)
+    db.commit()
+    db.refresh(nouveau_chauffeur)
+    
+    return {"message": "Chauffeur inscrit avec succès", "id": nouveau_chauffeur.id}
 
 # 1. Route pour changer le statut (Disponible / Indisponible)
 @router.patch("/statut", response_model=schemas.ChauffeurResponse)
